@@ -52,6 +52,7 @@ namespace TrafficCongestionReport
                     DebugLog.LogToFileOnly("OnLevelLoaded");
                     isAdvancedJunctionRuleRunning = Check3rdPartyModLoaded("AdvancedJunctionRule", true);
                     HarmonyInitDetour();
+                    Loader.DetourInited = true;
                     if (mode == LoadMode.NewGame)
                     {
                         DebugLog.LogToFileOnly("New Game");

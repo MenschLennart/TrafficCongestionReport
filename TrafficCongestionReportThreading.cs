@@ -71,7 +71,7 @@ namespace TrafficCongestionReport
 
         public void CheckDetour()
         {
-            if (isFirstTime)
+            if (isFirstTime && Loader.DetourInited)
             {
                 isFirstTime = false;
                 DetourAfterLoad();
@@ -124,7 +124,7 @@ namespace TrafficCongestionReport
                     Loader.Detours.Add(new Loader.Detour(as1.GetType("AdvancedJunctionRule.CustomAI.NewCarAI").GetMethod("VehicleStatusForTrafficCongestionReport", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static, null, new Type[] {
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType()}, null),
-                typeof(CustomCarAI).GetMethod("CustomCarAICustomSimulationStepPreFix", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static, null, new Type[] {
+                typeof(CustomCarAI).GetMethod("CarAICustomSimulationStepPreFix", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static, null, new Type[] {
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType()}, null)));
                 }
@@ -133,7 +133,6 @@ namespace TrafficCongestionReport
                     DebugLog.LogToFileOnly("Could not detour AdvancedJunctionRule.NewCarAI::VehicleStatusForTrafficCongestionReport");
                     detourFailed = true;
                 }
-                Loader.DetourInited = true;
             }
 
             if (detourFailed)
