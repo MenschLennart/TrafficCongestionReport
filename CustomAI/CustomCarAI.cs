@@ -77,6 +77,7 @@ namespace TrafficCongestionReport.CustomAI
                                 int noise;
                                 float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out noise);
                                 MainDataStore.trafficBuffer[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBuffer[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * tempNum), 65535);
+                                MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * 16), 65535);
                             }
                             else
                             {

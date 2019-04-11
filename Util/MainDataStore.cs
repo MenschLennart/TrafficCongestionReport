@@ -11,7 +11,9 @@ namespace TrafficCongestionReport.Util
         //2*36864 + 1*36864
         public static ushort[] trafficBuffer = new ushort[36864];         //1
         public static byte[] trafficDensity = new byte[36864];           //1      //1
-        public static byte[] saveData = new byte[110592];
+        public static ushort[] trafficBufferAmountMode = new ushort[36864];         //1
+        public static byte[] trafficDensityAmountMode = new byte[36864];           //1      //1
+        public static byte[] saveData = new byte[221184];
         //private void ProcessLeftWaiting(ushort vehicleID, ushort nodeId, ushort fromSegmentId, byte fromLaneIndex, ushort toSegmentId, uint laneID, byte offset)
 
         public static void DataInit()
@@ -20,6 +22,8 @@ namespace TrafficCongestionReport.Util
             {
                 trafficBuffer[i] = 0;
                 trafficDensity[i] = 0;
+                trafficBufferAmountMode[i] = 0;
+                trafficDensityAmountMode[i] = 0;
             }
         }
 
@@ -28,6 +32,8 @@ namespace TrafficCongestionReport.Util
             int i = 0;
             SaveAndRestore.save_ushorts(ref i, trafficBuffer, ref saveData);
             SaveAndRestore.save_bytes(ref i, trafficDensity, ref saveData);
+            SaveAndRestore.save_ushorts(ref i, trafficBufferAmountMode, ref saveData);
+            SaveAndRestore.save_bytes(ref i, trafficDensityAmountMode, ref saveData);
         }
 
         public static void load()
@@ -35,7 +41,8 @@ namespace TrafficCongestionReport.Util
             int i = 0;
             trafficBuffer = SaveAndRestore.load_ushorts(ref i, saveData, trafficBuffer.Length);
             trafficDensity = SaveAndRestore.load_bytes(ref i, saveData, trafficDensity.Length);
-
+            trafficBuffer = SaveAndRestore.load_ushorts(ref i, saveData, trafficBufferAmountMode.Length);
+            trafficDensity = SaveAndRestore.load_bytes(ref i, saveData, trafficDensityAmountMode.Length);
         }
     }
 }

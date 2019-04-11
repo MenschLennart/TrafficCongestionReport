@@ -100,7 +100,7 @@ namespace TrafficCongestionReport.Util
             if (Loader.CurrentLoadMode == LoadMode.LoadGame || Loader.CurrentLoadMode == LoadMode.NewGame)
             {
                 DebugLog.LogToFileOnly("startsave");
-                MainDataStore.saveData = new byte[110592];
+                MainDataStore.saveData = new byte[221184];
                 gatherSaveData();
                 SaveAndRestore._serializableData.SaveData("TrafficCongestionReport MainDataStore", MainDataStore.saveData);
             }
@@ -109,7 +109,7 @@ namespace TrafficCongestionReport.Util
         public override void OnLoadData()
         {
             MainDataStore.DataInit();
-            MainDataStore.saveData = new byte[110592];
+            MainDataStore.saveData = new byte[221184];
             DebugLog.LogToFileOnly("OnLoadData");
             DebugLog.LogToFileOnly("startload");
 

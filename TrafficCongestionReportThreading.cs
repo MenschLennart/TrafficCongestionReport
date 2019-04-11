@@ -29,7 +29,7 @@ namespace TrafficCongestionReport
             }
         }
 
-        public void RoadStatus(ushort segmentID, ref NetSegment data)
+        public static void RoadStatus(ushort segmentID, ref NetSegment data)
         {
             NetManager instance = Singleton<NetManager>.instance;
             if (data.m_flags.IsFlagSet(NetSegment.Flags.Created))
@@ -49,8 +49,9 @@ namespace TrafficCongestionReport
                         curLaneId = instance.m_lanes.m_buffer[(int)curLaneId].m_nextLane;
                         laneIndex++;
                     }
-                    int trafficDensity = 0;
+
                     int lengthDenominator = Mathf.RoundToInt(totalLength) << 4;
+                    int trafficDensity = 0;
                     if (lengthDenominator != 0)
                     {
                         trafficDensity = (int)((byte)Mathf.Min((int)(MainDataStore.trafficBuffer[(int)segmentID] * 100) / lengthDenominator, 100));
@@ -64,7 +65,30 @@ namespace TrafficCongestionReport
                     {
                         MainDataStore.trafficDensity[(int)segmentID] = (byte)Mathf.Max((int)(MainDataStore.trafficDensity[(int)segmentID] - 5), trafficDensity);
                     }
-                    data.m_trafficDensity = MainDataStore.trafficDensity[(int)segmentID];
+
+                    int trafficDensityAmountMode = 0;
+                    if (lengthDenominator != 0)
+                    {
+                        trafficDensityAmountMode = (int)((byte)Mathf.Min((int)(MainDataStore.trafficBufferAmountMode[(int)segmentID] * 100) / lengthDenominator, 100));
+                    }
+                    MainDataStore.trafficBufferAmountMode[(int)segmentID] = 0;
+                    if (trafficDensityAmountMode > (int)MainDataStore.trafficDensityAmountMode[(int)segmentID])
+                    {
+                        MainDataStore.trafficDensityAmountMode[(int)segmentID] = (byte)Mathf.Min((int)(MainDataStore.trafficDensityAmountMode[(int)segmentID] + 5), trafficDensityAmountMode);
+                    }
+                    else if (trafficDensityAmountMode < (int)MainDataStore.trafficDensityAmountMode[(int)segmentID])
+                    {
+                        MainDataStore.trafficDensityAmountMode[(int)segmentID] = (byte)Mathf.Max((int)(MainDataStore.trafficDensityAmountMode[(int)segmentID] - 5), trafficDensityAmountMode);
+                    }
+
+                    if (TrafficCongestionReport.AmountMode)
+                    {
+                        data.m_trafficDensity = MainDataStore.trafficDensityAmountMode[(int)segmentID];
+                    }
+                    else
+                    {
+                        data.m_trafficDensity = MainDataStore.trafficDensity[(int)segmentID];
+                    }
                 }
             }
         }

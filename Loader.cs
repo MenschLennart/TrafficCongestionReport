@@ -9,6 +9,7 @@ using System.Linq;
 using ColossalFramework.Math;
 using TrafficCongestionReport.Util;
 using System.Collections.Generic;
+using TrafficCongestionReport.UI;
 
 namespace TrafficCongestionReport
 {
@@ -18,6 +19,7 @@ namespace TrafficCongestionReport
         public static bool isAdvancedJunctionRuleRunning = false;
         public static bool isLoaded = false;
         public static bool HarmonyDetourInited = false;
+        public static bool isGuiRunning = false;
         public class Detour
         {
             public MethodInfo OriginalMethod;
@@ -34,6 +36,8 @@ namespace TrafficCongestionReport
 
         public static List<Detour> Detours { get; set; }
         public static bool DetourInited = false;
+        public static SwitchUI guiPanel;
+        public static UIView parentGuiView;
 
         public override void OnCreated(ILoading loading)
         {
@@ -50,6 +54,7 @@ namespace TrafficCongestionReport
                 if (mode == LoadMode.LoadGame || mode == LoadMode.NewGame)
                 {
                     DebugLog.LogToFileOnly("OnLevelLoaded");
+                    SetupGui();
                     isAdvancedJunctionRuleRunning = Check3rdPartyModLoaded("AdvancedJunctionRule", true);
                     HarmonyInitDetour();
                     Loader.DetourInited = true;
@@ -65,6 +70,10 @@ namespace TrafficCongestionReport
         public override void OnLevelUnloading()
         {
             base.OnLevelUnloading();
+            if (isGuiRunning)
+            {
+                RemoveGui();
+            }
             RevertDetour();
             HarmonyRevertDetour();
             TrafficCongestionReportThreading.isFirstTime = true;
@@ -73,6 +82,29 @@ namespace TrafficCongestionReport
         public override void OnReleased()
         {
             base.OnReleased();
+        }
+
+        public void SetupGui()
+        {
+            Loader.parentGuiView = null;
+            Loader.parentGuiView = UIView.GetAView();
+
+            if (Loader.guiPanel == null)
+            {
+                Loader.guiPanel = (SwitchUI)Loader.parentGuiView.AddUIComponent(typeof(SwitchUI));
+            }
+            isGuiRunning = true;
+        }
+
+        public void RemoveGui()
+        {
+            if (parentGuiView != null)
+            {
+                parentGuiView = null;
+                UnityEngine.Object.Destroy(guiPanel);
+                guiPanel = null;
+            }
+            isGuiRunning = false;
         }
 
         public void HarmonyInitDetour()

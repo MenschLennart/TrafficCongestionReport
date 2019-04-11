@@ -13,6 +13,7 @@ namespace TrafficCongestionReport
     public class TrafficCongestionReport : IUserMod
     {
         public static bool IsEnabled = false;
+        public static bool AmountMode = false;
 
         public string Name
         {

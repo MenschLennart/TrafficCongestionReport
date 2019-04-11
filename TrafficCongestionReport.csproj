@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UI\SwitchUI.cs" />
     <Compile Include="Util\RedirectionHelper.cs" />
     <Compile Include="CustomAI\CustomCarAI.cs" />
     <Compile Include="Util\DebugLog.cs" />
