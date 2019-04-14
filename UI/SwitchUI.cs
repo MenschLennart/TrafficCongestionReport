@@ -13,7 +13,7 @@ namespace TrafficCongestionReport.UI
         {
             if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.K))
             {
-                DebugLog.LogToFileOnly("Shift+R found!");
+                DebugLog.LogToFileOnly("Shift+K found!");
                 TrafficCongestionReport.AmountMode = !TrafficCongestionReport.AmountMode;
                 for (int j = 0; j <= 36863; j++)
                 {
