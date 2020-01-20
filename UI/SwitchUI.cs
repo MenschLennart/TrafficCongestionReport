@@ -9,18 +9,12 @@ namespace TrafficCongestionReport.UI
 {
     public class SwitchUI : UIPanel
     {
-        public override void Update()
+        public void OnGUI()
         {
-            if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.K))
-            {
-                DebugLog.LogToFileOnly("Shift+K found!");
-                TrafficCongestionReport.AmountMode = !TrafficCongestionReport.AmountMode;
-                for (int j = 0; j <= 36863; j++)
-                {
-                    TrafficCongestionReportThreading.RoadStatus((ushort)j, ref Singleton<NetManager>.instance.m_segments.m_buffer[j]);
-                }
-            }
-            base.Update();
+            var e = Event.current;
+            // Checking key presses
+            if (OptionsKeymappingFunction.amountMode.IsPressed(e))  TrafficCongestionReport.AmountMode = true;
+            if (OptionsKeymappingFunction.speedMode.IsPressed(e))   TrafficCongestionReport.AmountMode = false;
         }
 
         public override void Start()

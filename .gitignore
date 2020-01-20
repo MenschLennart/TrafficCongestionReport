@@ -2,3 +2,9 @@
 *.pdb
 *.cache
 *.xml
+*.lock
+*.ide
+*.ide-shm
+*.ide-wal
+.vs/TrafficCongestionReport/v16/.suo
+obj/Release/TrafficCongestionReport.csproj.CopyComplete

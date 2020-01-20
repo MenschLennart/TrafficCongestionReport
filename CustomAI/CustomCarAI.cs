@@ -29,15 +29,10 @@ namespace TrafficCongestionReport.CustomAI
             int num4 = (int)(currentFrameIndex & 255u);
             if (((num4 >> 4) & 15u) == (vehicleID & 15u))
             {
-                if (vehicleID < 16384)
+                if (vehicleID < Singleton<VehicleManager>.instance.m_vehicles.m_size)
                 {
                     Vehicle vehicle = instance.m_vehicles.m_buffer[vehicleID];
                     uint pathId = vehicle.m_path;
-                    if (pathId >= 262144)
-                    {
-                        DebugLog.LogToFileOnly("Invaid pathId = " + pathId.ToString());
-                        pathId = 0;
-                    }
 
                     if (pathId != 0)
                     {
@@ -46,43 +41,30 @@ namespace TrafficCongestionReport.CustomAI
                         PathUnit.Position currentPosition;
                         if (!pathMan.m_pathUnits.m_buffer[pathId].GetPosition(finePathPosIndex >> 1, out currentPosition))
                         {
-                            //DebugLog.LogToFileOnly("Error: no currentPosition");
                             return;
-                        }
-
-                        if (currentPosition.m_segment >= 36864)
-                        {
-                            DebugLog.LogToFileOnly("Invaid m_segment = " + currentPosition.m_segment.ToString());
-                            currentPosition.m_segment = 0;
                         }
 
                         if (currentPosition.m_segment != 0)
                         {
-                            if (currentPosition.m_lane < netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes.Length)
+                            float speedLimit = netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes[currentPosition.m_lane].m_speedLimit;
+                            float realSpeed = (float)Math.Sqrt(vehicle.GetLastFrameVelocity().x * vehicle.GetLastFrameVelocity().x + vehicle.GetLastFrameVelocity().y * vehicle.GetLastFrameVelocity().y + vehicle.GetLastFrameVelocity().z * vehicle.GetLastFrameVelocity().z);
+                            float tempNum = 1f;
+                            if (speedLimit != 0)
                             {
-                                float speedLimit = netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes[currentPosition.m_lane].m_speedLimit;
-                                float realSpeed = (float)Math.Sqrt(vehicle.GetLastFrameVelocity().x * vehicle.GetLastFrameVelocity().x + vehicle.GetLastFrameVelocity().y * vehicle.GetLastFrameVelocity().y + vehicle.GetLastFrameVelocity().z * vehicle.GetLastFrameVelocity().z);
-                                float tempNum = 1f;
-                                if (speedLimit != 0)
-                                {
-                                    tempNum = (realSpeed / speedLimit * 8f);
-                                }
-
-                                if (tempNum > 0.5f)
-                                {
-                                    tempNum = 0.5f;
-                                }
-
-                                tempNum = (0.5f - tempNum) * 64f;
-                                int noise;
-                                float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out noise);
-                                MainDataStore.trafficBuffer[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBuffer[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * tempNum), 65535);
-                                MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * 16), 65535);
+                                tempNum = (realSpeed / speedLimit * 8f);
                             }
-                            else
+
+                            if (tempNum > 0.5f)
                             {
-                                DebugLog.LogToFileOnly("Error: invalid currentPosition.m_lane = " + currentPosition.m_lane.ToString() + "Length = " + netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes.Length.ToString());
+                                tempNum = 0.5f;
                             }
+
+                            tempNum = (0.5f - tempNum) * 64f;
+                            int noise;
+                            float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out noise);
+                            MainDataStore.trafficBuffer[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBuffer[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * tempNum), 65535);
+                            //2.5f * 16 = 40f
+                            MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 40f)), 65535);
                         }
                     }
                 }
