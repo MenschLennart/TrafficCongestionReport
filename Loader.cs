@@ -70,13 +70,16 @@ namespace TrafficCongestionReport
         public override void OnLevelUnloading()
         {
             base.OnLevelUnloading();
-            if (isGuiRunning)
+            if (Loader.CurrentLoadMode == LoadMode.LoadGame || Loader.CurrentLoadMode == LoadMode.NewGame)
             {
-                RemoveGui();
+                if (isGuiRunning)
+                {
+                    RemoveGui();
+                }
+                RevertDetour();
+                HarmonyRevertDetour();
+                TrafficCongestionReportThreading.isFirstTime = true;
             }
-            RevertDetour();
-            HarmonyRevertDetour();
-            TrafficCongestionReportThreading.isFirstTime = true;
         }
 
         public override void OnReleased()

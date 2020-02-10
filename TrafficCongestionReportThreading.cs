@@ -16,15 +16,18 @@ namespace TrafficCongestionReport
         public override void OnBeforeSimulationFrame()
         {
             base.OnBeforeSimulationFrame();
-            if (TrafficCongestionReport.IsEnabled)
+            if (Loader.CurrentLoadMode == LoadMode.LoadGame || Loader.CurrentLoadMode == LoadMode.NewGame)
             {
-                CheckDetour();
-                uint num2 = Singleton<SimulationManager>.instance.m_currentFrameIndex & 255u;
-                int num3 = (int)(num2 * 144u);
-                int num4 = (int)((num2 + 1u) * 144u - 1u);
-                for (int j = num3; j <= num4; j++)
+                if (TrafficCongestionReport.IsEnabled)
                 {
-                    RoadStatus((ushort)j, ref Singleton<NetManager>.instance.m_segments.m_buffer[j]);
+                    CheckDetour();
+                    uint num2 = Singleton<SimulationManager>.instance.m_currentFrameIndex & 255u;
+                    int num3 = (int)(num2 * 144u);
+                    int num4 = (int)((num2 + 1u) * 144u - 1u);
+                    for (int j = num3; j <= num4; j++)
+                    {
+                        RoadStatus((ushort)j, ref Singleton<NetManager>.instance.m_segments.m_buffer[j]);
+                    }
                 }
             }
         }
