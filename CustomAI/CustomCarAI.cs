@@ -47,19 +47,19 @@ namespace TrafficCongestionReport.CustomAI
                         if (currentPosition.m_segment != 0)
                         {
                             float speedLimit = netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes[currentPosition.m_lane].m_speedLimit;
-                            float realSpeed = (float)Math.Sqrt(vehicle.GetLastFrameVelocity().x * vehicle.GetLastFrameVelocity().x + vehicle.GetLastFrameVelocity().y * vehicle.GetLastFrameVelocity().y + vehicle.GetLastFrameVelocity().z * vehicle.GetLastFrameVelocity().z);
+                            float realSpeed = vehicle.GetLastFrameVelocity().magnitude;
+                            //(float)Math.Sqrt(vehicle.GetLastFrameVelocity().x * vehicle.GetLastFrameVelocity().x + vehicle.GetLastFrameVelocity().y * vehicle.GetLastFrameVelocity().y + vehicle.GetLastFrameVelocity().z * vehicle.GetLastFrameVelocity().z);
                             float tempNum = 1f;
                             if (speedLimit != 0)
                             {
-                                tempNum = (realSpeed / speedLimit * 8f);
+                                tempNum = 32f - ((realSpeed * 512f) / speedLimit);
                             }
 
-                            if (tempNum > 0.5f)
+                            if (tempNum < 0f)
                             {
-                                tempNum = 0.5f;
+                                tempNum = 0f;
                             }
 
-                            tempNum = (0.5f - tempNum) * 64f;
                             int noise;
                             float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out noise);
                             MainDataStore.trafficBuffer[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBuffer[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * tempNum), 65535);

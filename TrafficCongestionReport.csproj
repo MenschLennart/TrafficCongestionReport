@@ -71,10 +71,14 @@
     <Compile Include="TrafficCongestionReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="PreviewImage.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "D:\Mod\TrafficCongestionReport\bin\Release\TrafficCongestionReport.dll"  "F:\SteamLibrary\steamapps\workshop\content\255710\1651036644\TrafficCongestionReport.dll"
-copy "D:\Mod\TrafficCongestionReport\bin\Release\0Harmony.dll"  "F:\SteamLibrary\steamapps\workshop\content\255710\1651036644\0Harmony.dll"</PostBuildEvent>
+copy "D:\Mod\TrafficCongestionReport\bin\Release\0Harmony.dll"  "F:\SteamLibrary\steamapps\workshop\content\255710\1651036644\0Harmony.dll"
+copy "D:\Mod\TrafficCongestionReport\PreviewImage.png"  "F:\SteamLibrary\steamapps\workshop\content\255710\1651036644\PreviewImage.png"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
