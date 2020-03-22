@@ -1,8 +1,4 @@
 ﻿using ColossalFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using TrafficCongestionReport.Util;
 using UnityEngine;
 
@@ -10,12 +6,7 @@ namespace TrafficCongestionReport.CustomAI
 {
     public class CustomCarAI
     {
-        public static void CarAISimulationStepPreFix(ushort vehicleID, ref Vehicle vehicleData, ref Vehicle.Frame frameData, ushort leaderID, ref Vehicle leaderData, int lodPhysics)
-        {
-            VehicleStatus(vehicleID);
-        }
-        //For detour AdvancedJuctionRule
-        public static void CarAICustomSimulationStepPreFix(ushort vehicleID, ref Vehicle vehicleData)
+        public static void CarAISimulationStepPreFix(ushort vehicleID)
         {
             VehicleStatus(vehicleID);
         }
@@ -37,9 +28,7 @@ namespace TrafficCongestionReport.CustomAI
                     if (pathId != 0)
                     {
                         byte finePathPosIndex = vehicle.m_pathPositionIndex;
-                        byte lastPathOffset = vehicle.m_lastPathOffset;
-                        PathUnit.Position currentPosition;
-                        if (!pathMan.m_pathUnits.m_buffer[pathId].GetPosition(finePathPosIndex >> 1, out currentPosition))
+                        if (!pathMan.m_pathUnits.m_buffer[pathId].GetPosition(finePathPosIndex >> 1, out PathUnit.Position currentPosition))
                         {
                             return;
                         }
@@ -48,7 +37,6 @@ namespace TrafficCongestionReport.CustomAI
                         {
                             float speedLimit = netManager.m_segments.m_buffer[currentPosition.m_segment].Info.m_lanes[currentPosition.m_lane].m_speedLimit;
                             float realSpeed = vehicle.GetLastFrameVelocity().magnitude;
-                            //(float)Math.Sqrt(vehicle.GetLastFrameVelocity().x * vehicle.GetLastFrameVelocity().x + vehicle.GetLastFrameVelocity().y * vehicle.GetLastFrameVelocity().y + vehicle.GetLastFrameVelocity().z * vehicle.GetLastFrameVelocity().z);
                             float tempNum = 1f;
                             if (speedLimit != 0)
                             {
@@ -60,8 +48,7 @@ namespace TrafficCongestionReport.CustomAI
                                 tempNum = 0f;
                             }
 
-                            int noise;
-                            float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out noise);
+                            float num9 = 1f + vehicle.CalculateTotalLength(vehicleID, out _);
                             MainDataStore.trafficBuffer[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBuffer[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 2.5f) * tempNum), 65535);
                             //2.5f * 16 = 40f
                             MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] = (ushort)Mathf.Min((int)MainDataStore.trafficBufferAmountMode[currentPosition.m_segment] + (Mathf.RoundToInt(num9 * 40f)), 65535);

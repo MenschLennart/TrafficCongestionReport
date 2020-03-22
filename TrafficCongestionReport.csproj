@@ -60,7 +60,6 @@
     <Compile Include="UI\OptionUI.cs" />
     <Compile Include="UI\OptionsKeymappingFunction.cs" />
     <Compile Include="UI\SwitchUI.cs" />
-    <Compile Include="Util\RedirectionHelper.cs" />
     <Compile Include="CustomAI\CustomCarAI.cs" />
     <Compile Include="Util\DebugLog.cs" />
     <Compile Include="Util\HarmonyDetours.cs" />

@@ -42,39 +42,33 @@ namespace TrafficCongestionReport.Util
         {
             harmony = HarmonyInstance.Create("TrafficCongestionReport");
             //1
-            if (!Loader.isAdvancedJunctionRuleRunning)
-            {
-                var carAISimulationStep = typeof(CarAI).GetMethod("SimulationStep", BindingFlags.Instance | BindingFlags.Public, null, new Type[] {
+            var carAISimulationStep = typeof(CarAI).GetMethod("SimulationStep", BindingFlags.Instance | BindingFlags.Public, null, new Type[] {
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType(),
                 typeof(Vehicle.Frame).MakeByRefType(),
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType(),
                 typeof(int)}, null);
-                var carAISimulationStepPreFix = typeof(CustomCarAI).GetMethod("CarAISimulationStepPreFix");
-                harmony.ConditionalPatch(carAISimulationStep,
-                    new HarmonyMethod(carAISimulationStepPreFix),
-                    null);
-            }
+            var carAISimulationStepPreFix = typeof(CustomCarAI).GetMethod("CarAISimulationStepPreFix");
+            harmony.ConditionalPatch(carAISimulationStep,
+                new HarmonyMethod(carAISimulationStepPreFix),
+                null);
         }
 
         public static void DeApply()
         {
             //1
-            if (!Loader.isAdvancedJunctionRuleRunning)
-            {
-                var carAISimulationStep = typeof(CarAI).GetMethod("SimulationStep", BindingFlags.Instance | BindingFlags.Public, null, new Type[] {
+            var carAISimulationStep = typeof(CarAI).GetMethod("SimulationStep", BindingFlags.Instance | BindingFlags.Public, null, new Type[] {
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType(),
                 typeof(Vehicle.Frame).MakeByRefType(),
                 typeof(ushort),
                 typeof(Vehicle).MakeByRefType(),
                 typeof(int)}, null);
-                var carAISimulationStepPreFix = typeof(CustomCarAI).GetMethod("CarAISimulationStepPreFix");
-                harmony.ConditionalUnPatch(carAISimulationStep,
-                    new HarmonyMethod(carAISimulationStepPreFix),
-                    null);
-            }
+            var carAISimulationStepPreFix = typeof(CustomCarAI).GetMethod("CarAISimulationStepPreFix");
+            harmony.ConditionalUnPatch(carAISimulationStep,
+                new HarmonyMethod(carAISimulationStepPreFix),
+                null);
         }
     }
 }

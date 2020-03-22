@@ -1,14 +1,6 @@
 ﻿using ColossalFramework.UI;
 using ICities;
-using UnityEngine;
-using System.IO;
-using ColossalFramework;
-using System.Reflection;
-using System;
-using System.Linq;
-using ColossalFramework.Math;
 using TrafficCongestionReport.Util;
-using System.Collections.Generic;
 using TrafficCongestionReport.UI;
 
 namespace TrafficCongestionReport
@@ -16,32 +8,15 @@ namespace TrafficCongestionReport
     public class Loader : LoadingExtensionBase
     {
         public static LoadMode CurrentLoadMode;
-        public static bool isAdvancedJunctionRuleRunning = false;
         public static bool isLoaded = false;
         public static bool HarmonyDetourInited = false;
+        public static bool HarmonyDetourFailed = true;
         public static bool isGuiRunning = false;
-        public class Detour
-        {
-            public MethodInfo OriginalMethod;
-            public MethodInfo CustomMethod;
-            public RedirectCallsState Redirect;
-
-            public Detour(MethodInfo originalMethod, MethodInfo customMethod)
-            {
-                this.OriginalMethod = originalMethod;
-                this.CustomMethod = customMethod;
-                this.Redirect = RedirectionHelper.RedirectCalls(originalMethod, customMethod);
-            }
-        }
-
-        public static List<Detour> Detours { get; set; }
-        public static bool DetourInited = false;
         public static SwitchUI guiPanel;
         public static UIView parentGuiView;
 
         public override void OnCreated(ILoading loading)
         {
-            Detours = new List<Detour>();
             base.OnCreated(loading);
         }
 
@@ -55,9 +30,7 @@ namespace TrafficCongestionReport
                 {
                     DebugLog.LogToFileOnly("OnLevelLoaded");
                     SetupGui();
-                    isAdvancedJunctionRuleRunning = Check3rdPartyModLoaded("AdvancedJunctionRule", true);
                     HarmonyInitDetour();
-                    Loader.DetourInited = true;
                     if (mode == LoadMode.NewGame)
                     {
                         DebugLog.LogToFileOnly("New Game");
@@ -76,7 +49,6 @@ namespace TrafficCongestionReport
                 {
                     RemoveGui();
                 }
-                RevertDetour();
                 HarmonyRevertDetour();
                 TrafficCongestionReportThreading.isFirstTime = true;
             }
@@ -117,6 +89,7 @@ namespace TrafficCongestionReport
                 DebugLog.LogToFileOnly("Init harmony detours");
                 HarmonyDetours.Apply();
                 HarmonyDetourInited = true;
+                HarmonyDetourFailed = false;
             }
         }
 
@@ -127,56 +100,8 @@ namespace TrafficCongestionReport
                 DebugLog.LogToFileOnly("Revert harmony detours");
                 HarmonyDetours.DeApply();
                 HarmonyDetourInited = false;
+                HarmonyDetourFailed = true;
             }
-        }
-
-        public void RevertDetour()
-        {
-            if (DetourInited)
-            {
-                DebugLog.LogToFileOnly("Revert detours");
-                Detours.Reverse();
-                foreach (Detour d in Detours)
-                {
-                    RedirectionHelper.RevertRedirect(d.OriginalMethod, d.Redirect);
-                }
-                DetourInited = false;
-                Detours.Clear();
-                DebugLog.LogToFileOnly("Reverting detours finished.");
-            }
-        }
-
-        private bool Check3rdPartyModLoaded(string namespaceStr, bool printAll = false)
-        {
-            bool thirdPartyModLoaded = false;
-
-            var loadingWrapperLoadingExtensionsField = typeof(LoadingWrapper).GetField("m_LoadingExtensions", BindingFlags.NonPublic | BindingFlags.Instance);
-            List<ILoadingExtension> loadingExtensions = (List<ILoadingExtension>)loadingWrapperLoadingExtensionsField.GetValue(Singleton<LoadingManager>.instance.m_LoadingWrapper);
-
-            if (loadingExtensions != null)
-            {
-                foreach (ILoadingExtension extension in loadingExtensions)
-                {
-                    if (printAll)
-                        DebugLog.LogToFileOnly($"Detected extension: {extension.GetType().Name} in namespace {extension.GetType().Namespace}");
-                    if (extension.GetType().Namespace == null)
-                        continue;
-
-                    var nsStr = extension.GetType().Namespace.ToString();
-                    if (namespaceStr.Equals(nsStr))
-                    {
-                        DebugLog.LogToFileOnly($"The mod '{namespaceStr}' has been detected.");
-                        thirdPartyModLoaded = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                DebugLog.LogToFileOnly("Could not get loading extensions");
-            }
-
-            return thirdPartyModLoaded;
         }
     }
 }
